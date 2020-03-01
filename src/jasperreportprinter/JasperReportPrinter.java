@@ -15,19 +15,19 @@ import java.sql.DriverManager;
 
 import java.sql.SQLException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+// import java.util.logging.Level;
+// import java.util.logging.Logger;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.Copies;
-import javax.print.attribute.standard.MediaPrintableArea;
+// import javax.print.attribute.standard.MediaPrintableArea;
 
 import javax.print.attribute.standard.MediaSizeName;
 import javax.print.attribute.standard.MediaSize;
-import javax.print.attribute.standard.OrientationRequested;
-import javax.print.attribute.standard.PrintQuality;
+// import javax.print.attribute.standard.OrientationRequested;
+// import javax.print.attribute.standard.PrintQuality;
 
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.export.*;
@@ -36,12 +36,14 @@ import net.sf.jasperreports.engine.export.*;
  *
  * @author Luxolo
  */
-public class JasperReportPrinter extends JmtJasperReportingComponent{
-    public void printReport(String[] args) {
+public class JasperReportPrinter extends JasperReportingComponent{
+    public void printReport(String[] args, Boolean debug_mode) {
         try {
             String srcReportName = args[0] + "/" + args[1]+ ".jasper";
-            Map reportParams = getReportParams(args);
-
+            Map reportParams = getReportParams(args, debug_mode);
+            if (debug_mode) {
+                System.out.println("Jasper debug: report name = " + srcReportName);
+            }
     //        try {
                     Class driver = Class.forName("org.postgresql.Driver");
                     Connection conn = DriverManager.getConnection(args[3]);
@@ -57,7 +59,7 @@ public class JasperReportPrinter extends JmtJasperReportingComponent{
 
                 /* Scan found services to see if anyone suits our needs */
                 for(int i = 0; i < services.length;i++){
-    //                if(services[i].getName().toUpperCase().contains("\\\\ace\\jmt_printer")){
+    //                if(services[i].getName().toUpperCase().contains("\\\\ace\\_printer")){
                     if(services[i].getName().equals(args[2])){
                     /*If the service is named as what we are querying we select it */
     //                    System.out.println("Printer Found: " + args[2]);
@@ -66,7 +68,7 @@ public class JasperReportPrinter extends JmtJasperReportingComponent{
                 }
 
                 if(selectedService == -1) {
-                    System.out.println("JMT Jasper error: Printer not found - " + args[2]);
+                    System.out.println("Jasper error: Printer not found - " + args[2]);
                     System.exit(1);
                 }
                 job.setPrintService(services[selectedService]);
@@ -89,13 +91,13 @@ public class JasperReportPrinter extends JmtJasperReportingComponent{
 
                 exporter.exportReport();
         } catch (PrinterException ex) {
-            System.out.println("JMT Jasper error: " + ex.getMessage());
+            System.out.println("Jasper error: Printer error: " + ex.getMessage());
         } catch (JRException ex) {
-            System.out.println("JMT Jasper error: " + ex.getMessage());
+            System.out.println("Jasper error: " + ex.getMessage());
         } catch (ClassNotFoundException ex) {
-            System.out.println("JMT Jasper error: " + ex.getMessage());
+            System.out.println("Jasper error: Class not found: " + ex.getMessage());
         } catch (SQLException ex) {
-            System.out.println("JMT Jasper error: " + ex.getMessage());
+            System.out.println("Jasper error: SQL error: " + ex.getMessage());
         }
     }
 }

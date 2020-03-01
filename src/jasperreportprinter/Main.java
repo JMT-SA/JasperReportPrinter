@@ -17,25 +17,30 @@ public class Main {
         // TODO code application logic here
 
         try {
-            Map reportParams = JmtJasperReportingComponent.getReportParams(args);
+            String debug_mode = System.getenv("DEBUG");
+            
+            Map reportParams = JasperReportingComponent.getReportParams(args, false);
             String mode = (String)reportParams.get("MODE");
+            if (debug_mode != null) {
+                System.out.println("Jasper debug: Mode is " + mode);
+            }
 
             if(mode!=null && mode.equals("GENERATE")) {
                 JasperReportGenerator jrGenerator = new JasperReportGenerator();
-                jrGenerator.generateReport(args);
+                jrGenerator.generateReport(args, debug_mode != null);
             } else if(mode!=null && mode.equals("PRINT")) {
                 JasperReportPrinter jrPrinter = new JasperReportPrinter();
-                jrPrinter.printReport(args);
+                jrPrinter.printReport(args, debug_mode != null);
             } else {
-                System.out.println("JMT Jasper error: Please specify the MODE[GENERATE/PRINT]");
+                System.out.println("Jasper error: Please specify the MODE[GENERATE/PRINT]");
                 System.exit(1);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("JMT Jasper error: " + e.getMessage());
+            System.out.println("Jasper error: " + e.getMessage());
         } catch (java.lang.NoClassDefFoundError e) {
             e.printStackTrace();
-            System.out.println("JMT Jasper error: " + e.getMessage());
+            System.out.println("Jasper error: Class not defined: " + e.getMessage());
         }
     }
 }
